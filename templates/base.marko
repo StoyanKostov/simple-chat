@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+    <title><layout-placeholder name="title"/></title>
+	<style type="text/css">
+		html, body, nav, ul, li, a, input {
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			margin: 0 auto;
+			max-width: 960px;
+		}
+
+		ul {
+			list-style-type: none;
+		}
+		nav ul li{
+			margin-right: 10px;
+			display: inline-block;
+		}
+
+		#messages {
+			padding: 5px;
+			border: 1px solid #dcdcdc;
+		}
+		#messages:empty {
+			padding: 0;
+			margin: 0;
+			border: none;
+		}
+			#messages li {
+				margin: 5px 0;
+				padding: 5px;
+			}
+			#messages li:nth-child(odd) {
+				background-color: #eeeeee;
+			}
+			#messages li:nth-child(even) {
+				background-color: #ffffff;
+			}
+    </style>
+</head>
+<body>
+	<header>
+		<nav>
+			<ul>
+				<li>
+					<a href="/">/</a>
+				</li>
+				<li>
+					<a href="/home">Home</a>
+				<li>
+					<a href="/chat">Chat</a>
+				</li>
+				</li>
+				<li>
+					<a href="/login">Log in</a>
+				</li>
+				<li>
+					<a href="/register">Register</a>
+				</li>
+				<li>
+					<a href="/logout">Log out</a>
+				</li>
+			</ul>
+		</nav>
+	</header>
+	<main>
+		<layout-placeholder name="body"/>
+	</main>
+	<footer>my awesome footer</footer>
+    <layout-placeholder name="scripts"/>
+</body>
+</html>

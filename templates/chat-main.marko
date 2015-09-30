@@ -1,0 +1,14 @@
+<layout-use template="./base.marko">
+    <layout-put into="title">Chat - ${data.title}</layout-put>
+    <layout-put into="body">
+        <h3>${data.title}</h3>
+        <h5>Hello, ${data.username}</h5>
+        <ul id="messages"></ul>
+        <input id="chat-message" autocomplete="off" />
+        <button id="chat-message-send">Send</button>
+    </layout-put>
+    <layout-put into="scripts">
+        <script src="/node_modules/socket.io/node_modules/socket.io-client/socket.io.js"></script>
+        <script src="public/app.js"></script>
+    </layout-put>
+</layout-use>

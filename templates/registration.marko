@@ -1,0 +1,16 @@
+<layout-use template="./base.marko">
+	<layout-put into="title">${data.title}</layout-put>
+	<layout-put into="body">
+			<h3>${data.title}</h3>
+			<h5 class="notify">${data.notification}</h5>
+			<form method="POST" action="register-user">
+				<label>User
+					<input name="username" type="text"/>
+				</label>
+				<label>Password
+					<input name="userpassword" type="text"/>
+				</label>
+				<input type="submit"/>
+			</form>
+	</layout-put>
+</layout-use>
