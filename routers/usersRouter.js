@@ -1,6 +1,5 @@
 const io = require.main.require( './socketio' ),
-	data = require.main.require( './data' ),
-	validation = require.main.require( './validation' );
+	userController = require.main.require( './controllers/user' );
 
 module.exports = [
 	{
@@ -22,11 +21,11 @@ module.exports = [
 	{
 		method: 'GET',
 		path:'/home',
+		handler: function (request, reply) {
+			return reply.marko('index', {title: 'home'});
+		},
 		config: {
 			auth: 'session-strategy',		
-			handler: function (request, reply) {
-				return reply.marko('index', {title: 'home'});
-			}
 		}
 	},
 	{
@@ -40,18 +39,13 @@ module.exports = [
 		method: 'POST',
 		path:'/register-user',
 		handler: function (request, reply) {
-			const payloadUsername = request.payload.username,
-				payloadPassword = request.payload.password;
-				payloadPasswordRe = request.payload.passwordRe;
-
-			data.registerUser({username: payloadUsername, password: payloadPassword})
+			userController.registerUser(request.payload)
 				.then(function(){
 					return reply.redirect('/chat');
 				})
 				.catch(
-					// Rejected promises are passed on by Promise.prototype.then(onFulfilled)
 					function(reason) {
-						console.log('Handle rejected promise (' + reason + ') here.');
+						reply.marko('register', {title: 'Register', notification: reason});
 				});
 		}
 	},
@@ -74,33 +68,7 @@ module.exports = [
 				return reply.redirect('/chat');
 			}
 
-			const payloadUsername = request.payload.username,
-				payloadPassword = request.payload.password;
-
-			if (!validation.user.isDefined(payloadUsername)) {
-				return reply.marko('login', {title: 'Log In', notification: 'Missing username'});
-			}
-
-			if (!validation.user.isDefined(payloadPassword)) {
-				return reply.marko('login', {title: 'Log In', notification: 'Missing password'});
-			}
-
-			data.getUserByName(payloadUsername)
-				.then(function(user){
-					if (!validation.user.isDefined(user)) {
-						return reply.marko('login', {title: 'Log In', notification: 'Invalid user'});
-					}
-
-					if (user.password !== payloadPassword) {
-						return reply.marko('login', {title: 'Log In', notification: 'Invalid password'});
-					}
-
-					return {
-						id: user.id,
-						username: user.username,
-						password: user.password,
-					};
-				})
+			userController.getUserByName(request.payload)
 				.then(function(account){
 					request.auth.session.set(account);
 					return reply.redirect('/chat');
@@ -108,29 +76,29 @@ module.exports = [
 				.catch(
 					// Rejected promises are passed on by Promise.prototype.then(onFulfilled)
 					function(reason) {
-						console.log('Handle rejected promise (' + JSON.stringify(reason) + ') here.');
+						reply.marko('login', {title: 'Log In', notification: reason});
+						//console.log('Handle rejected promise (' + JSON.stringify(reason) + ') here.');
 				});
 		}
 	},
 	{
 		method: 'GET',
 		path:'/chat',
+		handler: function (request, reply) {
+			var username = request.auth.credentials.username;
+			io.use(function (socket, next) {
+				if (request.auth.isAuthenticated) {
+					socket.userName = username;
+					next();
+				} else {
+					next('Authentication Failed');
+				}
+			});
+
+			return reply.marko('chat-main', {title: 'Chat started', username: username});
+		},
 		config: {
 			auth: 'session-strategy',
-			handler: function (request, reply) {
-				const username = request.auth.credentials.username;
-
-				io.use(function (socket, next) {
-					if (request.auth.isAuthenticated) {
-						socket.userName = username;
-						next();
-					} else {
-						next('Authentication Failed');
-					}
-				});
-
-				return reply.marko('chat-main', {title: 'Chat started', username: username});
-			}
 		}
 	}
 ];
