@@ -1,0 +1,11 @@
+# Node modules
+node_modules
+
+# Links with tutorials
+links.txt
+
+# Logs
+*.log
+
+# WebStorm shits
+.idea
